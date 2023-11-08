@@ -3,35 +3,37 @@ package com.enesergen.demoproject.model;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 
+import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 @Entity
-@Table(name="USERS")
-public class User extends BaseEntity{
+@Table(name = "USERS")
+public class User extends BaseEntity {
 
-    @Column(name="FIRSTNAME")
+    @Column(name = "FIRSTNAME")
     private String firstName;
-    @Column(name="LASTNAME")
+    @Column(name = "LASTNAME")
     private String lastName;
-    @Column(name="USERNAME",unique = true)
+    @Column(name = "USERNAME", unique = true)
     @NotNull
     private String username;
     @NotNull
-    @Column(name="PASSWORD")
+    @Column(name = "PASSWORD")
     private String password;
-    @Column(name="EMAIL",unique = true)
+    @Column(name = "EMAIL", unique = true)
     @NotNull
     private String email;
-    @Column(name="PHONENUMBER")
+    @Column(name = "PHONENUMBER")
     private String phoneNumber;
-    @Enumerated(EnumType.STRING)
-    private Role role;
+    @Column(name = "ROLE")
+    private String role;
 
     public User() {
 
     }
 
-    public User(String firstName, String lastName, String username, String password, String email, String phoneNumber, Role role) {
+    public User(String firstName, String lastName, String username, String password, String email, String phoneNumber, String role) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.username = username;
@@ -89,13 +91,11 @@ public class User extends BaseEntity{
         this.phoneNumber = phoneNumber;
     }
 
-    public Role getRole() {
+    public String getRole() {
         return role;
     }
 
-    public void setRole(Role role) {
+    public void setRole(String role) {
         this.role = role;
     }
-
-
 }

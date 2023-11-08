@@ -1,13 +1,19 @@
 package com.enesergen.demoproject.config;
 
 
+import com.enesergen.demoproject.exception.ExceptionConstant;
+import com.enesergen.demoproject.exception.UserRoleNotFoundException;
 import com.enesergen.demoproject.repository.UserRepository;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -16,12 +22,14 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import java.util.ArrayList;
+
 import java.util.Collection;
 import java.util.List;
 
 @Configuration
 public class ApplicationConfig {
+    private static final Logger logger = LogManager.getLogger(ApplicationConfig.class);
+
     private final UserRepository userRepository;
 
     public ApplicationConfig(UserRepository userRepository) {
@@ -34,11 +42,16 @@ public class ApplicationConfig {
                 new UserDetailsService() {
                     @Override
                     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-                        var user = userRepository.findUserByUsername(username).orElseThrow();
+                        var user = userRepository.findUserByUsername(username).orElseThrow(()->new UsernameNotFoundException(ExceptionConstant.ERR_001));
                         return new UserDetails() {
                             @Override
                             public Collection<? extends GrantedAuthority> getAuthorities() {
-                                return List.of(new SimpleGrantedAuthority(user.getRole().name()));
+                                if(user.getRole()!=null){
+                                    return List.of(new SimpleGrantedAuthority(user.getRole()));
+                                }else{
+                                    throw new UserRoleNotFoundException(ExceptionConstant.ERR_002);
+                                }
+
                             }
 
                             @Override

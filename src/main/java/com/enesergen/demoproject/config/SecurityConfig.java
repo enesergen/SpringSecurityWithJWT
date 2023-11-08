@@ -1,35 +1,47 @@
 package com.enesergen.demoproject.config;
 
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import com.enesergen.demoproject.model.Role;
+import jakarta.servlet.ServletException;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 
 @Configuration
-@EnableAutoConfiguration
+@EnableWebSecurity
 public class SecurityConfig {
-
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final AuthenticationProvider authenticationProvider;
-
     public SecurityConfig(JwtAuthenticationFilter jwtAuthenticationFilter, AuthenticationProvider authenticationProvider) {
         this.jwtAuthenticationFilter = jwtAuthenticationFilter;
         this.authenticationProvider = authenticationProvider;
     }
-
     @Bean
-    public SecurityFilterChain securityFilterChain( HttpSecurity httpSecurity) throws Exception {
-        httpSecurity
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        //Hasauthority kısmına direk istediğinizi yazabilirsiniz role olarak
+        //hasRole başına Role_ ekliyor
+        http
                 .csrf(AbstractHttpConfigurer::disable)
-                .authorizeHttpRequests((auth)-> auth.requestMatchers("/api/auth/**").permitAll().anyRequest().authenticated())
-                .sessionManagement((securitySessionManagementConfigurer)-> securitySessionManagementConfigurer.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .authorizeHttpRequests((authorize) ->
+                        authorize
+                                .requestMatchers("/api/auth/**").permitAll()
+                                .requestMatchers("/api/admin/**").hasAuthority(Role.ADMIN.name())
+                                .requestMatchers("/api/user/**").hasAuthority(Role.USER.name())
+                                .anyRequest().authenticated()
+                )
+                .sessionManagement((securitySessionManagementConfigurer) ->
+                        securitySessionManagementConfigurer.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                )
                 .authenticationProvider(authenticationProvider)
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+        return http.build();
                 /*
                 **** -> and() is DEPRECATED...
                 .authorizeHttpRequests()
@@ -44,7 +56,7 @@ public class SecurityConfig {
                 .authenticationProvider(authenticationProvider)
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 */
-        return httpSecurity.build();
+
     }
 
 

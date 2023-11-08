@@ -4,7 +4,7 @@ import com.enesergen.demoproject.model.dto.UserAuthenticateRequestDto;
 import com.enesergen.demoproject.model.dto.UserAuthenticateResponseDto;
 import com.enesergen.demoproject.model.dto.UserRegisterRequestDto;
 import com.enesergen.demoproject.model.dto.UserRegisterResponseDto;
-import com.enesergen.demoproject.service.UserService;
+import com.enesergen.demoproject.service.auth.UserService;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;

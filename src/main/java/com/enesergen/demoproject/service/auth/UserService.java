@@ -1,4 +1,4 @@
-package com.enesergen.demoproject.service;
+package com.enesergen.demoproject.service.auth;
 
 import com.enesergen.demoproject.model.Role;
 import com.enesergen.demoproject.model.User;
@@ -11,11 +11,6 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 
 @Service
 public class UserService {
@@ -43,7 +38,7 @@ public class UserService {
         user.setPassword(passwordEncoder.encode(userRegisterRequestDto.getPassword()));
         user.setEmail(userRegisterRequestDto.getEmail());
         user.setPhoneNumber(userRegisterRequestDto.getPhoneNumber());
-        user.setRole(Role.USER);
+        user.setRole(Role.USER.name());
         var savedUser = userRepository.save(user);
         var jwtToken = jwtService.generateToken(savedUser);
         return new UserRegisterResponseDto(true,jwtToken,"");

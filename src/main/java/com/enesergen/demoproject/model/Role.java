@@ -1,6 +1,6 @@
 package com.enesergen.demoproject.model;
 
-public enum Role{
+public enum Role {
+    ADMIN,
     USER
-
 }
